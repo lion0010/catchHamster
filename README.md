@@ -1,2 +1,6 @@
-# hello-world
-Hello world new project template.
+# 仓鼠大作战
+# 休闲娱乐
+# 主要功能：
+     抛出并捕获仓鼠
+     图鉴
+     分享
