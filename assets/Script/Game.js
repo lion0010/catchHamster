@@ -10,11 +10,21 @@ cc.Class({
             default: null,
             type: cc.Node
         },
+        bg1:{
+            default: null,
+            type: cc.Node
+        },
+        bg2:{
+            default: null,
+            type: cc.Node
+        },
         // 当前绳子长度
         lineLength: 100,
         // 当前可捕获仓鼠数量
         canCatchNum: 3,
-        gameState: 0 // 0表示奶酪未抛出，1表示奶酪抛出中 2表示奶酪子拉回状态 3表示奶酪拉回结算状态
+        gameState: 0, // 0表示奶酪未抛出，1表示奶酪抛出中 2表示奶酪子拉回状态 3表示奶酪拉回结算状态
+        ySpeed: 10,
+        time: 0
     },
 
     // use this for initialization
@@ -33,6 +43,7 @@ cc.Class({
         this.node.once('touchstart',function(event){
             this.startLabel.destroy();
             this.gameState = 1;
+            
         },this)
     },
 
@@ -41,6 +52,13 @@ cc.Class({
     // 奶酪扔出（3秒到达最远距离的80%，然后1s匀减速至最远处）
     cheeseGo: function () {
         // 先做匀加速至最远距离
+        /*背景轮播，向远处抛出动画*/ 
+        this.bg1.y-=this.ySpeed;
+        this.bg2.y-=this.ySpeed;
+        if(this.bg1.y<=-1344){
+            this.bg1.y=0;
+            this.bg2.y=1344
+        }
         
     },
 
@@ -51,13 +69,13 @@ cc.Class({
     // 奶酪可跟随touch手指横向移动(两侧可以加wall进行碰撞检测)
     cheeseMove: function(){
         this.node.on('touchmove',function(event){
-            if(this.cheese.x < -480){
-                this.cheese.x = -480
+            if(this.cheese.x < -375){
+                this.cheese.x = -375;
                 return
             }else if(event.getLocationX() > 860 ){
                 return
             }else{
-                this.cheese.x = event.getLocationX()-480;
+                this.cheese.x = event.getLocationX()-375;
             }
         },this)
     },
@@ -73,8 +91,17 @@ cc.Class({
 
     // called every frame
     update: function (dt) {
+        
+        this.cheeseMove()
         if(this.gameState === 1){
-            this.cheeseMove();
+            this.cheeseGo();
+            this.time++; 
+            this.ySpeed+=1
+        }
+        if((this.ySpeed * this.time + 1/2 * this.time * this.time)>= this.lineLength*100){
+            this.gameState = 2
+            this.time = 0;
+
         }
     },
 });
